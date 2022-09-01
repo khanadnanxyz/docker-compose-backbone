@@ -7,13 +7,30 @@ services:
     ports:
       - 5000:8080
     environment:
-      - KEYCLOAK_USER=admin
-      - KEYCLOAK_PASSWORD=admin
+      - DB_VENDOR=POSTGRES
+      - DB_ADDR=postgres
+      - DB_DATABASE=keycloak
+      - DB_USER=admin
+      - DB_PASSWORD=admin
+      # uncomment for initial user creation
+      # - KEYCLOAK_USER=admin
+      # - KEYCLOAK_PASSWORD=admin
       - PROXY_ADDRESS_FORWARDING=true
-    command: -Dkeycloak.profile.feature.upload_scripts=enabled
+    command: 
+      - -Dkeycloak.profile.feature.upload_scripts=enabled
+      - -Dkeycloak.profile.feature.token_exchange=enabled
+      - -Dkeycloak.profile=preview
+      # uncomment for user import/export
+        #- -Dkeycloak.migration.action=export
+        #- -Dkeycloak.migration.provider=singleFile 
+        #- -Dkeycloak.migration.file=/tmp/users/export.json
+
     restart: unless-stopped
     volumes:
-      - keycloak:/opt/jboss/keycloak
+      - keycloak-themes:/opt/jboss/keycloak/themes
+      - keycloak-deployments:/opt/jboss/keycloak/standalone/deployments
+      # to export/import users
+      - keycloak-users:/tmp/users
     networks:
       - backbone-network
     
@@ -85,12 +102,24 @@ services:
       - backbone-network
 
 volumes:
-  keycloak:
+  keycloak-themes:
     driver: local
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: '${PWD}/data/keycloak'
+      device: '${PWD}/data/keycloak/themes'
+  keycloak-deployments:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '${PWD}/data/keycloak/deployments'
+  keycloak-users:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '${PWD}/data/keycloak/users'
   redis:
     driver: local
     driver_opts:
