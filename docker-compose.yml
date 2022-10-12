@@ -30,7 +30,7 @@ services:
       - keycloak-themes:/opt/jboss/keycloak/themes
       - keycloak-deployments:/opt/jboss/keycloak/standalone/deployments
       # to export/import users
-      - keycloak-users:/tmp/users
+      # - keycloak-users:/tmp/users
     networks:
       - backbone-network
     
@@ -114,12 +114,12 @@ volumes:
       type: 'none'
       o: 'bind'
       device: '${PWD}/data/keycloak/deployments'
-  keycloak-users:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: '${PWD}/data/keycloak/users'
+  # keycloak-users:
+  #   driver: local
+  #   driver_opts:
+  #     type: 'none'
+  #     o: 'bind'
+  #     device: '${PWD}/data/keycloak/users'
   redis:
     driver: local
     driver_opts:
